@@ -14,10 +14,19 @@ class HalachaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Text(halachaText, style: TextStyle(fontSize: 18)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('הלכות מעשר'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Text(halachaText, style: TextStyle(fontSize: 18)),
+        ),
       ),
     );
   }

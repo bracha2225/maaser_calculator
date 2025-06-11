@@ -9,9 +9,56 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   String error = "";
+  String passwordValidationError = "";
+
+  bool _isPasswordValid(String password) {
+    // בדיקה שהסיסמה לפחות 8 תווים
+    if (password.length < 8) {
+      passwordValidationError = "הסיסמה חייבת להכיל לפחות 8 תווים";
+      return false;
+    }
+
+    // בדיקה שיש לפחות אות אחת
+    if (!RegExp(r'[a-zA-Z]').hasMatch(password)) {
+      passwordValidationError = "הסיסמה חייבת להכיל לפחות אות אחת באנגלית";
+      return false;
+    }
+
+    // בדיקה שיש לפחות ספרה אחת
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      passwordValidationError = "הסיסמה חייבת להכיל לפחות ספרה אחת";
+      return false;
+    }
+
+    // בדיקה שאין אותיות עבריות
+    if (RegExp(r'[\u0590-\u05FF]').hasMatch(password)) {
+      passwordValidationError = "הסיסמה לא יכולה להכיל אותיות עבריות";
+      return false;
+    }
+
+    passwordValidationError = "";
+    return true;
+  }
 
   Future<void> register() async {
+    // בדיקה שהסיסמאות זהות
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        error = "הסיסמאות אינן זהות";
+      });
+      return;
+    }
+
+    // בדיקת תקינות הסיסמה
+    if (!_isPasswordValid(_passwordController.text)) {
+      setState(() {
+        error = passwordValidationError;
+      });
+      return;
+    }
+
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -58,6 +105,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               decoration: const InputDecoration(labelText: 'סיסמה'),
               obscureText: true,
+              onChanged: (value) {
+                setState(() {
+                  _isPasswordValid(value);
+                });
+              },
+            ),
+            if (passwordValidationError.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(passwordValidationError, style: const TextStyle(color: Colors.orange, fontSize: 12)),
+            ],
+            TextField(
+              controller: _confirmPasswordController,
+              decoration: const InputDecoration(labelText: 'אישור סיסמה'),
+              obscureText: true,
             ),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: register, child: const Text('הרשם')),
@@ -75,6 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'register_screen.dart'; // לייבא את מסך ההרשמה
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -63,8 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(labelText: 'סיסמה'),
               obscureText: true,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24), // רווח גדול יותר
             ElevatedButton(onPressed: signIn, child: const Text('התחבר')),
+            const SizedBox(height: 16), // רווח בין הכפתורים
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
